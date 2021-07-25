@@ -31,7 +31,8 @@ def get_language_mappings() -> pd.DataFrame:
     Returns:
     language_mappings - pd.DataFrame; mappings between names & abbreviations.
     """
-    file_path = "data/language_mappings.csv"
+#     file_path = "data/language_mappings.csv"
+    file_path = "language_mappings.csv"
     try:
         language_mappings = pd.read_csv(file_path)
     except:
@@ -80,7 +81,8 @@ def get_sentences() -> pd.DataFrame:
     result - pd.DataFrame; a subset of sentences.
     """
     print("Getting Tatoeba sentences...")
-    file_path = "data/sentences.csv"
+#     file_path = "data/sentences.csv"
+    file_path = "sentences.csv"
     try:
         sentences = pd.read_csv(file_path, delimiter="\t", header=None, index_col=0, names=["Language", "Sentence"])
     except:
@@ -88,7 +90,8 @@ def get_sentences() -> pd.DataFrame:
         tatoeba_url = "https://downloads.tatoeba.org/exports/sentences.tar.bz2"
         response = urllib.request.urlopen(tatoeba_url)
         tar = tarfile.open(fileobj=response, mode="r|bz2")
-        tar.extractall(path="data/")
+#         tar.extractall(path="data/")
+        tar.extractall(path=".")
         tar.close()
         sentences = pd.read_csv(file_path, delimiter="\t", header=None, index_col=0, names=["Language", "Sentence"])
         # print(f"Could not find file at {file_path}. Try downloading & unzipping file from {tatoeba_url} there.")    
