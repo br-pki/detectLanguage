@@ -1,6 +1,6 @@
-# ignore data folder
-/data
+# ignore specific files & folders
 /output
+sentences.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
