@@ -46,7 +46,7 @@ def get_sentences(min_sentences: int, these_languages: list) -> pd.DataFrame:
     assert these_languages, "these_languages doesn't contain any elements"
     assert all(isinstance(i, str) for i in these_languages), "not all elements of these_languages are of type str."
     
-    print(f"Getting Tatoeba sentences for {these_languages}...")
+    print(f"Getting Tatoeba sentences for {sorted(these_languages)}...")
     file_path = "sentences.csv"
     try:
         sentences = pd.read_csv(file_path, delimiter="\t", header=None, index_col=0, names=["Language", "Sentence"])
@@ -73,9 +73,7 @@ def get_sentences(min_sentences: int, these_languages: list) -> pd.DataFrame:
     language_filter = language_counts[(language_counts["Count"]>=min_sentences)&(~language_counts["English Name"].isna())]["ISO 639-3 Name"].tolist()
     result = sentences[sentences["Language"].isin(language_filter)]
     if result.empty: print("No sentences found for given language/minimum sentence criteria...")
-    else: print(language_filter)
-    # TODO update print out about actual languages included in sample
-    
+    else: print(f"...languages in sample: {sorted([iso_639_3_English[i] for i in language_filter])}...")
     return result
 
 def get_sentence_word_char_len(this_row: pd.Series) -> int:
