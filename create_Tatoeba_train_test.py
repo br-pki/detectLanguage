@@ -92,7 +92,8 @@ def get_sentence_word_char_len(this_row: pd.Series) -> int:
     this_text = this_row["Sentence"]
     # remove punctuation from this_text
     this_text = re.sub(r"[。？?！!，.“”、「」]", "", this_text) # the pattern is just a number of punctuations I found in the Asian texts
-    if this_language in ["Chinese", "Japanese", "Korean"]:
+    if this_language in ["Chinese", "Japanese", "Korean", "cmn", "jpn", "kor"]:
+        this_text = re.sub(r"\s", "", this_text) # remove whitespace chars
         result = len(this_text)
     else:
         result = len(this_text.split())
