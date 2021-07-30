@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 def get_language_mappings(this_path: str) -> pd.DataFrame:
     """
     Load a local file containing mappings between the English names
-    & the ISO 639-3 & ISO 639-1 abbreviations.
+    & the ISO 639-2 & ISO 639-1 abbreviations.
 
     Args:
     this_path - str; the path to the mappings file.
@@ -25,7 +25,7 @@ def get_language_mappings(this_path: str) -> pd.DataFrame:
     
     language_mappings = pd.read_csv(this_path)
     # enforce expected format
-    assert all(i in language_mappings.columns for i in ["English Name", "ISO 639-1", "ISO 639-3"]), f"Not all necessary columns found in language_mappings file. Check {file_path}"
+    assert all(i in language_mappings.columns for i in ["English Name", "ISO 639-1", "ISO 639-2"]), f"Not all necessary columns found in language_mappings file. Check {file_path}"
     
     return language_mappings
 
@@ -63,17 +63,17 @@ def get_sentences(min_sentences: int, these_languages: list) -> pd.DataFrame:
     # find which languages have minimum sentences == min_sentences
     language_counts = sentences["Language"].value_counts()
     language_counts = language_counts.to_frame().reset_index()
-    language_counts.rename(columns={"index":"ISO 639-3 Name", "Language": "Count"}, inplace=True)
-    # map from these_languages to ISO 639-3 & filter
+    language_counts.rename(columns={"index":"ISO 639-2 Name", "Language": "Count"}, inplace=True)
+    # map from these_languages to ISO 639-2 & filter
     language_mappings = get_language_mappings(this_path="language_mappings.csv")
     language_mappings = language_mappings[language_mappings["English Name"].isin(these_languages)]
-    iso_639_3_English = language_mappings[["ISO 639-3", "English Name"]].set_index(keys="ISO 639-3")["English Name"].to_dict()
-    language_counts["English Name"] = language_counts["ISO 639-3 Name"].map(iso_639_3_English)
-    # filter by languages with min_sentences & in these_languages using 3 digit language identifier: ISO 639-3 Name
-    language_filter = language_counts[(language_counts["Count"]>=min_sentences)&(~language_counts["English Name"].isna())]["ISO 639-3 Name"].tolist()
+    iso_639_2_English = language_mappings[["ISO 639-2", "English Name"]].set_index(keys="ISO 639-2")["English Name"].to_dict()
+    language_counts["English Name"] = language_counts["ISO 639-2 Name"].map(iso_639_2_English)
+    # filter by languages with min_sentences & in these_languages using 3 digit language identifier: ISO 639-2 Name
+    language_filter = language_counts[(language_counts["Count"]>=min_sentences)&(~language_counts["English Name"].isna())]["ISO 639-2 Name"].tolist()
     result = sentences[sentences["Language"].isin(language_filter)]
     if result.empty: print("No sentences found for given language/minimum sentence criteria...")
-    else: print(f"...languages in sample: {sorted([iso_639_3_English[i] for i in language_filter])}...")
+    else: print(f"...languages in sample: {sorted([iso_639_2_English[i] for i in language_filter])}...")
     return result
 
 def get_sentence_word_char_len(this_row: pd.Series) -> int:
