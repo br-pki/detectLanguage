@@ -9,6 +9,7 @@ warnings.filterwarnings('ignore')
 from datetime import datetime
 from sklearn.model_selection import train_test_split
 
+#@profile
 def get_language_mappings(this_path: str) -> pd.DataFrame:
     """
     Load a local file containing mappings between the English names
@@ -29,6 +30,7 @@ def get_language_mappings(this_path: str) -> pd.DataFrame:
     
     return language_mappings
 
+#@profile
 def get_sentences(min_sentences: int, these_languages: list) -> pd.DataFrame:
     """
     Get the Tatoeba sentences from a local file or download from Tatoeba
@@ -76,6 +78,7 @@ def get_sentences(min_sentences: int, these_languages: list) -> pd.DataFrame:
     else: print(f"...languages in sample: {sorted([iso_639_2_English[i] for i in language_filter])}...")
     return result
 
+#@profile
 def get_sentence_word_char_len(this_row: pd.Series) -> int:
     """
     Count the number of words or characters in a sentence based
@@ -99,6 +102,7 @@ def get_sentence_word_char_len(this_row: pd.Series) -> int:
         result = len(this_text.split())
     return result
 
+#@profile
 def take_sample(these_sentences: pd.DataFrame, sample_type: str) -> pd.DataFrame:
     """
     Take a random sample from a DataFrame containing Tatoeba sentences
@@ -146,6 +150,7 @@ def take_sample(these_sentences: pd.DataFrame, sample_type: str) -> pd.DataFrame
             this_sample = this_sample.append(temp_sample)
     return this_sample
 
+#@profile
 def main():
     # parse args
     parser = argparse.ArgumentParser()
@@ -187,35 +192,45 @@ def main():
         help='type of sample to take: "random" or "stratify"',
         required=False
     )
+    parser.add_argument(
+        "--number_sets",
+        type=int,
+        default=1,
+        help="number of train-test sets to generate",
+        required=False
+    )
     args = parser.parse_args()
     if args.languages:
         args.languages = [i.title() for i in args.languages]
     
-    # get sentences, take sample, create train & test
-    sentences = get_sentences(min_sentences=args.minimum_sentences, these_languages=args.languages)
-    if not sentences.empty:
-        sample = take_sample(sentences, args.sample_type)
-        y = sample["Language"]
-        X_train, X_test, y_train, y_test = train_test_split(
-            sample["Sentence"],
-            y,
-            train_size=0.8,
-            shuffle=True,
-            stratify=y
-        )
-        # combine train & test into DFs & save each in output/
-        train = X_train.to_frame().merge(right=y_train, how="inner", left_index=True, right_index=True)
-        test = X_test.to_frame().merge(right=y_test, how="inner", left_index=True, right_index=True)
+    counter = 0
+    for sample in range(args.number_sets):
+        # get sentences, take sample, create train & test
+        sentences = get_sentences(min_sentences=args.minimum_sentences, these_languages=args.languages)
+        if not sentences.empty:
+            sample = take_sample(sentences, args.sample_type)
+            y = sample["Language"]
+            X_train, X_test, y_train, y_test = train_test_split(
+                sample["Sentence"],
+                y,
+                train_size=0.8,
+                shuffle=True,
+                stratify=y
+            )
+            # combine train & test into DFs & save each in output/
+            train = X_train.to_frame().merge(right=y_train, how="inner", left_index=True, right_index=True)
+            test = X_test.to_frame().merge(right=y_test, how="inner", left_index=True, right_index=True)
 
-        # save train & test files
-        now = datetime.now()
-        datetime_stamp = f"{now.year}-{now.month}-{now.day}_{now.hour}{now.minute}"
-        train.to_csv(f"output/Tatoeba_{args.sample_type}_train_{datetime_stamp}.csv", index_label="Original Index")
-        test.to_csv(f"output/Tatoeba_{args.sample_type}_test_{datetime_stamp}.csv", index_label="Original Index")
-        print("Train & test files saved to output/")
-    else:
-        print("No sample generated.")
-    print("Finished!")
+            # save train & test files
+            now = datetime.now()
+            datetime_stamp = f"{now.year}-{now.month}-{now.day}_{now.hour}{now.minute}"
+            train.to_csv(f"output/Tatoeba_{args.sample_type}_train_{datetime_stamp}.csv", index_label="Original Index")
+            test.to_csv(f"output/Tatoeba_{args.sample_type}_test_{datetime_stamp}.csv", index_label="Original Index")
+            counter += 1
+            print("Train & test files saved to output/")
+        else:
+            print("No sample generated.")
+        print(f"Finished with sample {counter} of {args.number_sets}.\n")
 
 if __name__ == "__main__":
     main()
