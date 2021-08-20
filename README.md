@@ -5,6 +5,8 @@ The purpose of this repository is twofold:
  1. Evaluate the performance of solutions meant to detect the language of a given piece of text to identify a reliable solution (spoiler: langid).
 
 ## Tatoeba
+<img src="img/tatoeba_logo.PNG" height="100">
+
 Tatoeba is a database of sentences and their translations. Currently, there are +9 million sentences and +400 supported languages. The content is created and maintained by a community of volunteers. The data is freely available under a Creative Commons Attribution (CC-BY) license:
 
 Tatoeba -- https://tatoeba.org/ -- CC-BY License
@@ -50,6 +52,8 @@ Includes F1 scores, confusion matrices, and compiling the results as a function 
 
 ### plot_results.ipynb
 A notebook for plotting the performance results by language and as a function of sentence length.
+
+<img src="img/langid_overall_average_scores.png">
 
 ### get_predictions.ipynb
 A notebook for generating predictions for a large number of samples and finding the average F1 scores by language and by sentence length. It takes several hours (+8) to run and the results for 100 samples are not drastically different than the results for 1 sample.
