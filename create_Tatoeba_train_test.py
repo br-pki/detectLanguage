@@ -9,7 +9,6 @@ warnings.filterwarnings('ignore')
 from datetime import datetime
 from sklearn.model_selection import train_test_split
 
-#@profile
 def get_language_mappings(this_path: str) -> pd.DataFrame:
     """
     Load a local file containing mappings between the English names
@@ -30,7 +29,6 @@ def get_language_mappings(this_path: str) -> pd.DataFrame:
     
     return language_mappings
 
-#@profile
 def get_sentences(min_sentences: int, these_languages: list) -> pd.DataFrame:
     """
     Get the Tatoeba sentences from a local file or download from Tatoeba
@@ -78,7 +76,6 @@ def get_sentences(min_sentences: int, these_languages: list) -> pd.DataFrame:
     else: print(f"...languages in sample: {sorted([iso_639_2_English[i] for i in language_filter])}...")
     return result
 
-#@profile
 def get_sentence_word_char_len(this_row: pd.Series) -> int:
     """
     Count the number of words or characters in a sentence based
@@ -102,7 +99,6 @@ def get_sentence_word_char_len(this_row: pd.Series) -> int:
         result = len(this_text.split())
     return result
 
-#@profile
 def take_sample(these_sentences: pd.DataFrame, sample_type: str) -> pd.DataFrame:
     """
     Take a random sample from a DataFrame containing Tatoeba sentences
@@ -150,7 +146,6 @@ def take_sample(these_sentences: pd.DataFrame, sample_type: str) -> pd.DataFrame
             this_sample = this_sample.append(temp_sample)
     return this_sample
 
-#@profile
 def main():
     # parse args
     parser = argparse.ArgumentParser()
